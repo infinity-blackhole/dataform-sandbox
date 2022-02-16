@@ -1,0 +1,49 @@
+config {
+  type: "table",
+  schema: "reporting",
+  tags: ["daily"],
+  description: "Create a summary table for all users including statistics on questions, answeers and badges received.",
+  assertions: {
+    uniqueKey: ["user_id"],
+    rowConditions: ["badge_count >= 0"]
+  }
+}
+
+select
+  user.user_id,
+  user.age,
+  user.creation_date,
+  user.user_tenure,
+  count(distinct badge.badge_id) as badge_count,
+  count(distinct post.post_id) as questions_and_answer_count,
+  count(
+    distinct if(type = "question", post.post_id, null)
+  ) as question_count,
+  count(
+    distinct if(type = "answer", post.post_id, null)
+  ) as answer_count,
+  max(badge.award_timestamp) as last_badge_received_at,
+  max(post.created_at) as last_posted_at,
+  max(
+    if(
+      type = "question",
+      post.created_at,
+      null
+    )
+  ) as last_question_posted_at,
+  max(
+    if(
+      type = "answer",
+      post.created_at,
+      null
+    )
+  ) as last_answer_posted_at
+from
+  ${ref("staging", "dim_user")} as user
+  left join ${ref("staging", "dim_badge")} as badge on user.user_id = badge.user_id
+  left join ${ref("reporting", "fct_post_consolidation")} as post on user.user_id = post.owner_user_id
+group by
+  1,
+  2,
+  3,
+  4
