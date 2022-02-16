@@ -1,0 +1,16 @@
+{
+    "name": "dataform-sandbox",
+    "private": true,
+    "version": "0.0.1",
+    "author": {
+        "email": "deva.shikanime@protonmail.com",
+        "name": "Shikanime Deva",
+        "url": "git@github.com:infinity-blackhole/dataform-sandbox.git"
+    },
+    "scripts": {
+        "dataform": "dataform"
+    },
+    "dependencies": {
+        "@dataform/core": "1.21.1"
+    }
+}
